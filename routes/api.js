@@ -1,5 +1,6 @@
 "use strict";
 const { v4: uuidv4 } = require("uuid");
+let arrIssues = [];
 
 module.exports = function (app) {
   app
@@ -7,6 +8,11 @@ module.exports = function (app) {
 
     .get(function (req, res) {
       let project = req.params.project;
+      const arrRes = [];
+      arrIssues.forEach((obj) => {
+        if (obj.project == project) arrRes.push(obj);
+      });
+      res.json(arrRes);
     })
 
     .post(function (req, res) {
@@ -26,8 +32,9 @@ module.exports = function (app) {
         open: true,
         created_on: new Date(),
         updated_on: new Date(),
+        project: project,
       };
-      console.log(newIssue._id);
+      arrIssues.push(newIssue);
       res.json(newIssue);
     })
 
