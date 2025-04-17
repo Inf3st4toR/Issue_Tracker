@@ -72,10 +72,32 @@ module.exports = function (app) {
       res.json(newIssue);
     })
 
+    // PUT ROUTE
     .put(function (req, res) {
       let project = req.params.project;
+      const _id = req.body._id;
+      if (!_id) {
+        return res.status(400).json({ error: "missing _id" });
+      }
+      const issueTarget = arrIssues.find((obj) => obj._id === _id);
+      if (!issueTarget)
+        return res.status(400).json({ error: "could not update", _id: _id });
+      if (Object.keys(req.body).length === 1) {
+        return res
+          .status(400)
+          .json({ error: "no update field(s) sent", _id: _id });
+      }
+      const indexTarget = arrIssues.findIndex((obj) => obj._id === _id);
+      for (const key in issueTarget) {
+        if (req.body.hasOwnProperty(key)) {
+          issueTarget[key] = req.body[key];
+        }
+      }
+      arrIssues[indexTarget] = issueTarget;
+      return res.json({ result: "successfully updated", _id: _id });
     })
 
+    //DELETE ROUTE
     .delete(function (req, res) {
       let project = req.params.project;
     });
