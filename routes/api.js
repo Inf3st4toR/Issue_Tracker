@@ -21,7 +21,7 @@ module.exports = function (app) {
     // GET ROUTE
     .get(function (req, res) {
       let project = req.params.project;
-      const filteredArr = [];
+      let filteredArr = [];
       let filters = {};
       arrIssues.forEach((obj) => {
         if (obj.project === project) filteredArr.push(obj);
