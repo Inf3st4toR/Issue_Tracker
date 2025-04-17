@@ -3,14 +3,16 @@ const { v4: uuidv4 } = require("uuid");
 let arrIssues = [];
 
 //Filter function
-const matchFilters = (issue, filters) => {
-  for (let key in filters) {
-    if (issue[key] != filters[key]) {
-      return false;
-    }
-  }
-  return true;
-};
+const validFields = [
+  "issue_title",
+  "issue_text",
+  "created_by",
+  "assigned_to",
+  "status_text",
+  "open",
+  "created_on",
+  "updated_on",
+];
 
 module.exports = function (app) {
   app
@@ -19,33 +21,25 @@ module.exports = function (app) {
     // GET ROUTE
     .get(function (req, res) {
       let project = req.params.project;
-      const arrRes = [];
-      const filters = {};
-
-      if (req.query.issue_title !== undefined) {
-        filters.issue_title = req.query.issue_title;
-      }
-      if (req.query.issue_text !== undefined) {
-        filters.issue_text = req.query.issue_text;
-      }
-      if (req.query.created_by !== undefined) {
-        filters.created_by = req.query.created_by;
-      }
-      if (req.query.assigned_to !== undefined) {
-        filters.assigned_to = req.query.assigned_to;
-      }
-      if (req.query.status_text !== undefined) {
-        filters.status_text = req.query.status_text;
-      }
-      if (req.query.open !== undefined) {
-        filters.open = req.query.open === "true";
-      }
-
+      const filteredArr = [];
+      let filters = {};
       arrIssues.forEach((obj) => {
-        if (obj.project === project && matchFilters(obj, filters))
-          arrRes.push(obj);
+        if (obj.project === project) filteredArr.push(obj);
       });
-      res.json(arrRes);
+
+      for (const para in req.query) {
+        if (!validFields.includes(para)) continue;
+        filters[para] = req.query[para];
+      }
+      filteredArr = filteredArr.filter((obj) => {
+        for (const key in filters) {
+          if (obj[key] !== filters[key]) {
+            return false;
+          }
+        }
+        return true;
+      });
+      res.json(filteredArr);
     })
 
     //POST ROUTE
