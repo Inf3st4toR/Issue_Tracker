@@ -68,16 +68,15 @@ module.exports = function (app) {
       if (!_id) {
         return res.json({ error: "missing _id" });
       }
-      const issueTarget = arrIssues.find((obj) => obj._id === _id);
-      if (!issueTarget)
-        return res.json({ error: "could not update", _id: _id });
       const updateKeys = Object.keys(req.body).filter(
         (key) => key !== "_id" && validFields.includes(key)
       );
-
       if (updateKeys.length === 0) {
         return res.json({ error: "no update field(s) sent", _id: _id });
       }
+      const issueTarget = arrIssues.find((obj) => obj._id === _id);
+      if (!issueTarget)
+        return res.json({ error: "could not update", _id: _id });
 
       try {
         updateKeys.forEach((key) => {

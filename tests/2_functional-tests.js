@@ -235,7 +235,7 @@ suite("Functional Tests", function () {
       })
       .end((err, res) => {
         assert.deepEqual(res.body, {
-          error: "could not update",
+          error: "no update field(s) sent",
           _id: "invalid",
         });
         done();
