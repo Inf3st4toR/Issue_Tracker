@@ -20,26 +20,22 @@ module.exports = function (app) {
 
     // GET ROUTE
     .get(function (req, res) {
-      let project = req.params.project;
-      let filteredArr = [];
-      let filters = {};
-      arrIssues.forEach((obj) => {
-        if (obj.project === project) filteredArr.push(obj);
-      });
+      const project = req.params.project;
+      const query = req.query;
 
-      for (const para in req.query) {
-        if (!validFields.includes(para)) continue;
-        filters[para] = req.query[para];
-      }
-      filteredArr = filteredArr.filter((obj) => {
-        for (const key in filters) {
-          if (obj[key] !== filters[key]) {
-            return false;
+      //filter array
+      const result = arrIssues.filter((issue) => {
+        if (issue.project !== project) return false;
+        for (let key in query) {
+          let queryVal = query[key];
+          if (key === "open") {
+            queryVal = queryVal === "true";
           }
+          if (issue[key] != queryVal) return false;
         }
         return true;
       });
-      res.json(filteredArr);
+      res.json(result);
     })
 
     //POST ROUTE
@@ -68,7 +64,6 @@ module.exports = function (app) {
 
     // PUT ROUTE
     .put(function (req, res) {
-      let project = req.params.project;
       const _id = req.body._id;
       if (!_id) {
         return res.json({ error: "missing _id" });
@@ -76,17 +71,24 @@ module.exports = function (app) {
       const issueTarget = arrIssues.find((obj) => obj._id === _id);
       if (!issueTarget)
         return res.json({ error: "could not update", _id: _id });
-      if (Object.keys(req.body).length === 1) {
+      const updateKeys = Object.keys(req.body).filter(
+        (key) => key !== "_id" && validFields.includes(key)
+      );
+
+      if (updateKeys.length === 0) {
         return res.json({ error: "no update field(s) sent", _id: _id });
       }
-      const indexTarget = arrIssues.findIndex((obj) => obj._id === _id);
-      for (const key in issueTarget) {
-        if (req.body.hasOwnProperty(key)) {
+
+      try {
+        updateKeys.forEach((key) => {
           issueTarget[key] = req.body[key];
-        }
+        });
+
+        issueTarget.updated_on = new Date();
+        return res.json({ result: "successfully updated", _id: _id });
+      } catch (err) {
+        return res.json({ error: "could not update", _id: _id });
       }
-      arrIssues[indexTarget] = issueTarget;
-      return res.json({ result: "successfully updated", _id: _id });
     })
 
     //DELETE ROUTE
@@ -100,4 +102,9 @@ module.exports = function (app) {
       arrIssues.splice(indexTarget, 1);
       return res.json({ result: "successfully deleted", _id: _id });
     });
+
+  app.delete("/api/reset", function (req, res) {
+    arrIssues = [];
+    res.json({ result: "reset done" });
+  });
 };
