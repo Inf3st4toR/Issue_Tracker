@@ -100,5 +100,15 @@ module.exports = function (app) {
     //DELETE ROUTE
     .delete(function (req, res) {
       let project = req.params.project;
+      const _id = req.body._id;
+      if (!_id) {
+        return res.status(400).json({ error: "missing _id" });
+      }
+      const issueTarget = arrIssues.find((obj) => obj._id === _id);
+      if (!issueTarget)
+        return res.status(400).json({ error: "could not delete", _id: _id });
+      const indexTarget = arrIssues.findIndex((obj) => obj._id === _id);
+      arrIssues.splice(indexTarget, 1);
+      return res.json({ result: "successfully deleted", _id: _id });
     });
 };
