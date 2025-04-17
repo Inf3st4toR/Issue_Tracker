@@ -103,7 +103,6 @@ suite("Functional Tests", function () {
         created_by: "Roger",
       })
       .end((err, res) => {
-        assert.equal(res.status, 400);
         assert.deepEqual(res.body, { error: "required field(s) missing" });
         done();
       });
@@ -204,7 +203,6 @@ suite("Functional Tests", function () {
         issue_text: "Attempt to update",
       })
       .end((err, res) => {
-        assert.equal(res.status, 400);
         assert.deepEqual(res.body, { error: "missing _id" });
         done();
       });
@@ -219,7 +217,6 @@ suite("Functional Tests", function () {
         _id: issue1Id,
       })
       .end((err, res) => {
-        assert.equal(res.status, 400);
         assert.deepEqual(res.body, {
           error: "no update field(s) sent",
           _id: issue1Id,
@@ -237,7 +234,6 @@ suite("Functional Tests", function () {
         _id: "invalid",
       })
       .end((err, res) => {
-        assert.equal(res.status, 400);
         assert.deepEqual(res.body, {
           error: "could not update",
           _id: "invalid",
@@ -273,7 +269,6 @@ suite("Functional Tests", function () {
         _id: "invalid",
       })
       .end((err, res) => {
-        assert.equal(res.status, 400);
         assert.deepEqual(res.body, {
           error: "could not delete",
           _id: "invalid",
@@ -291,7 +286,6 @@ suite("Functional Tests", function () {
         _id: "",
       })
       .end((err, res) => {
-        assert.equal(res.status, 400);
         assert.deepEqual(res.body, { error: "missing _id" });
         done();
       });

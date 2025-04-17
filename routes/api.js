@@ -54,7 +54,7 @@ module.exports = function (app) {
       const { issue_title, issue_text, created_by, assigned_to, status_text } =
         req.body;
       if (!issue_title || !issue_text || !created_by) {
-        return res.status(400).json({ error: "required field(s) missing" });
+        return res.json({ error: "required field(s) missing" });
       }
       const newIssue = {
         _id: uuidv4(),
@@ -77,15 +77,13 @@ module.exports = function (app) {
       let project = req.params.project;
       const _id = req.body._id;
       if (!_id) {
-        return res.status(400).json({ error: "missing _id" });
+        return res.json({ error: "missing _id" });
       }
       const issueTarget = arrIssues.find((obj) => obj._id === _id);
       if (!issueTarget)
-        return res.status(400).json({ error: "could not update", _id: _id });
+        return res.json({ error: "could not update", _id: _id });
       if (Object.keys(req.body).length === 1) {
-        return res
-          .status(400)
-          .json({ error: "no update field(s) sent", _id: _id });
+        return res.json({ error: "no update field(s) sent", _id: _id });
       }
       const indexTarget = arrIssues.findIndex((obj) => obj._id === _id);
       for (const key in issueTarget) {
@@ -99,14 +97,11 @@ module.exports = function (app) {
 
     //DELETE ROUTE
     .delete(function (req, res) {
-      let project = req.params.project;
       const _id = req.body._id;
-      if (!_id) {
-        return res.status(400).json({ error: "missing _id" });
-      }
+      if (!_id) return res.json({ error: "missing _id" });
       const issueTarget = arrIssues.find((obj) => obj._id === _id);
       if (!issueTarget)
-        return res.status(400).json({ error: "could not delete", _id: _id });
+        return res.json({ error: "could not delete", _id: _id });
       const indexTarget = arrIssues.findIndex((obj) => obj._id === _id);
       arrIssues.splice(indexTarget, 1);
       return res.json({ result: "successfully deleted", _id: _id });
